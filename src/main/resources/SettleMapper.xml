@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qbd.dao.SettleMapper">
+    <!--领取优惠券-->
+    <insert id="getCoupon" parameterType="com.qbd.pojo.Coupon">
+        insert into coupon values (#{couponId},#{value },#{name },#{startTime},#{endTime},#{userId},${0},#{full});
+    </insert>
+    <!--根据id获取优惠券信息-->
+    <select id="getCouponById" resultType="com.qbd.pojo.Coupon">
+        select * from coupon where  couponId =#{couponId};
+    </select>
+    <!--预查找优惠券信息-->
+    <select id="getDisCountById" resultType="com.qbd.pojo.Discount">
+        select * from discount where discountId=#{couponId};
+    </select>
+    <update id="getPoints">
+        update points set points = points+${addPoints} where  userId= #{userId};
+    </update>
+    <update id="reducePoints">
+        update points set points = points-${reducePoints} where  userId= #{userId};
+    </update>
+    <!--查找个人拥有的优惠券(还未使用)-->
+    <select id="getSelfCoupons" resultType="com.qbd.pojo.Coupon">
+        select * from  coupon where userId=#{userId};
+    </select>
+    <!--查询可使用优惠券-->
+    <select id="canUseCoupons" resultType="com.qbd.pojo.GoodsDiscount">
+        select * from goodsdiscount where  goodsDiscountId=#{goodsDiscountId} and goodsId=#{goodsId};
+    </select>
+    <!--改变优惠券状态-->
+    <update id="updateCouponStatus">
+        update coupon set hadUsed = ${1} where couponId =#{couponId};
+    </update>
+    <!--联系优惠券和订单-->
+    <insert id="connectOrderCoupon">
+        insert  into ordercoupon where  orderId= #{orderId} and couponId=#{couponId};
+    </insert>
+    <!--生成订单-->
+    <insert id="createOrder" keyProperty="orderId" useGeneratedKeys="true" parameterType="com.qbd.pojo.Order">
+        insert into `order` (orderId,userId,status,value,createTime,usePoints)
+        values (#{orderId},#{userId},#{status},#{value},#{createTime},#{usePoints});
+    </insert>
+    <!--生成订单项-->
+    <insert id="createOrderGoods" parameterType="com.qbd.pojo.Ordergoods">
+        insert into  ordergoods values (#{orderId},#{goodsId},#{number });
+    </insert>
+</mapper>

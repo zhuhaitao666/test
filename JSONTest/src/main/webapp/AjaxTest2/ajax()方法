@@ -1,0 +1,8 @@
+1.加载JavaScript文件
+$.ajax({
+    type:"get",
+    url:"test.js",
+    dataType: "script"
+});
+2.把客户端的数据传递给服务端，并获取服务器的响应信息
+$.ajax()

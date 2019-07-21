@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qbd.dao.SelfMapper">
+    <resultMap id="orderGoods" type="com.qbd.pojo.Ordergoods">
+        <id column="orderId" property="orderId"></id>
+        <id column="goodsId" property="goodsId"></id>
+        <association property="shoes" select="com.qbd.dao.ShoesMapper.getShoesById"
+                     javaType="com.qbd.pojo.Shoes" column="goodsId">
+        </association>
+    </resultMap>
+    <select id="getOrderGoods" resultMap="orderGoods">
+        select * from ordergoods where orderId =#{orderId}
+    </select>
+
+    <resultMap id="AllOrder" type="com.qbd.pojo.Order">
+        <id property="orderId" column="orderId"></id>
+        <result column="userId" property="userId"></result>
+        <result column="orderTrackId" property="orderTrackId"/>
+        <association property="user" select="com.qbd.dao.UserMapper.getUserById"
+                     javaType="com.qbd.pojo.User" column="userId">
+        </association>
+        <collection property="orderTracks" ofType="com.qbd.dao.OrderMapper"
+                    select="com.qbd.dao.OrderMapper.getOrderTrackById" column="orderTrackId">
+        </collection>
+        <collection property="ordergoods" ofType="com.qbd.pojo.Ordergoods"
+                    select="com.qbd.dao.SelfMapper.getOrderGoods" column="orderId">
+        </collection>
+
+    </resultMap>
+    <select id="getOrderByUserId" resultMap="AllOrder">
+        select * from `order` where userId=#{userId} and (status=${1} or status=${2});
+    </select>
+    <select id="getBeShippedOrder" resultMap="AllOrder">
+        select * from `order` where userId=#{userId} and status=${0};
+    </select>
+    <select id="getHadGetted" resultMap="AllOrder">
+        select * from `order` where userId=#{userId} and status=${3};
+    </select>
+
+    <select id="findJudgementByOrderIdAndGoodsId" resultType="com.qbd.pojo.Comment">
+        select * from comment  where orderId = #{orderId} and goodsId=#{goodsId};
+    </select>
+    <select id="getCommentById" resultType="com.qbd.pojo.Comment">
+        select * from comment where commentId=#{commentId};
+    </select>
+    <insert id="judge" parameterType="com.qbd.pojo.Comment">
+
+        insert  into comment(commentId,orderId,userId,content,firstTime,star,goodsId)
+        values (#{commentId},#{orderId},#{userId},#{content},#{firstTime},#{star},#{goodsId});
+    </insert>
+
+    <update id="addJudge" parameterType="com.qbd.pojo.Comment">
+        update  comment set addContent=#{addContent},addTime =#{addTime} where commentId=#{commentId};
+    </update>
+</mapper>

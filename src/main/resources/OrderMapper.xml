@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qbd.dao.OrderMapper">
+    <select id="getOrderTrackById" resultType="com.qbd.pojo.OrderTrack">
+        select * from ordertrack where  orderTrackId=#{orderTrackId} order by updateTime;
+    </select>
+
+    <resultMap id="AllOrder" type="com.qbd.pojo.Order">
+        <id property="orderId" column="orderId"></id>
+        <result column="userId" property="userId"></result>
+        <result column="orderTrackId" property="orderTrackId"/>
+        <association property="user" select="com.qbd.dao.UserMapper.getUserById"
+                     javaType="com.qbd.pojo.User" column="userId">
+        </association>
+        <collection property="orderTracks" ofType="com.qbd.dao.OrderMapper"
+                    select="com.qbd.dao.OrderMapper.getOrderTrackById" column="orderTrackId">
+        </collection>
+        <collection property="ordergoods" ofType="com.qbd.pojo.Ordergoods"
+                    select="com.qbd.dao.SelfMapper.getOrderGoods" column="orderId">
+        </collection>
+
+    </resultMap>
+    <select id="getAllPendingShipmentOrders" resultMap="AllOrder">
+        select * from `order` where  status=0 order by createTime desc ;
+    </select>
+    <insert id="addOrderTrack" parameterType="com.qbd.pojo.OrderTrack" keyProperty="orderTrackId" useGeneratedKeys="true">
+        insert into  ordertrack values (#{orderTrackId},#{location},#{arriveState},#{updateTime});
+    </insert>
+    <update id="Pending">
+        update `order` set status=1,orderTrackId=#{orderTrackId} where orderId=#{orderId};
+    </update>
+    <update id="arrived">
+        update `order` set status=2 where orderId=#{orderId};
+    </update>
+    <select id="getAllPendingOrders" resultMap="AllOrder">
+        select * from `order` where status=1 order by createTime desc ;
+    </select>
+
+</mapper>

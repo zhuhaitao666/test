@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qbd.dao.ShoesImgMapper">
+    <select id="getShoesImg" resultType="com.qbd.pojo.ShoesImg">
+        select * from goodsimg where goodsImgId = #{goodsImgId};
+    </select>
+    <insert id="addImg" useGeneratedKeys="true" keyProperty="goodsImgId">
+        insert into goodsimg values (#{goodsImgId},#{path},#{uploadTime},#{uploader});
+    </insert>
+    <update id="updateImg" parameterType="com.qbd.pojo.ShoesImg">
+        update goodsimg set path =#{path} where goodsImgId=#{goodsImgId};
+    </update>
+</mapper>

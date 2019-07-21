@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qbd.dao.ShoesMapper">
+    <!--查询所有的鞋子-->
+    <resultMap id="all" type="com.qbd.pojo.Shoes">
+        <id column="goodsId" property="goodsId"></id>
+        <association property="shoesImg" column="goodsImgId" select="com.qbd.dao.ShoesImgMapper.getShoesImg">
+        </association>
+        <association property="shoesType" column="goodsTypeId" select="com.qbd.dao.ShoesTypeMapper.getShoesTypeById">
+        </association>
+    </resultMap>
+    <select id="getAllShoes" resultMap="all">
+         select * from goods where isOnSale=${1};
+    </select>
+<!--查询热卖鞋-->
+    <resultMap id="hot" type="com.qbd.pojo.Shoes">
+        <id column="goodsId" property="goodsId"></id>
+        <association property="shoesImg" column="goodsImgId" select="com.qbd.dao.ShoesImgMapper.getShoesImg">
+        </association>
+        <association property="shoesType" column="goodsTypeId" select="com.qbd.dao.ShoesTypeMapper.getShoesTypeById">
+        </association>
+    </resultMap>
+    <select id="getHotShoes" resultMap="hot">
+        select * from goods where hot=${1} and isOnSale=${1};
+    </select>
+<!--查询回收站中的鞋子-->
+    <select id="getRecycleShoes" resultMap="all">
+        select * from goods where isOnSale=${0};
+    </select>
+    <!--减少鞋子的数量-->
+    <update id="reduceNum">
+        update goods set number =number-${buynum} where goodsId=#{goodsId};
+    </update>
+    <!--增加鞋子的数量-->
+    <update id="addNum">
+        update goods set number =number+${addnum} where goodsId=#{goodsId};
+    </update>
+    <!--根据goodsId查询鞋子-->
+    <select id="getShoesById"  resultMap="all">
+        select * from goods where goodsId=#{goodsId};
+    </select>
+    <!--查询鞋子的评论-->
+    <resultMap id="judge" type="com.qbd.pojo.Comment">
+        <id column="commentId" property="commentId"></id>
+        <result property="userId" column="userId"></result>
+        <association property="user" select="com.qbd.dao.UserMapper.getUserById" column="userId">
+        </association>
+    </resultMap>
+    <select id="getCommentsByShoesId" resultMap="judge">
+        select * from comment  where goodsId=#{gooodsId};
+    </select>
+
+    <!--商家添加鞋子-->
+    <insert id="addShoes" parameterType="com.qbd.pojo.Shoes" useGeneratedKeys="true" keyProperty="goodsId">
+        insert  into goods values (#{goodsId},#{goodsName},#{goodsTypeId},#{desc},#{number }
+        ,#{onTime},#{offTime},#{shopPrice},#{promotePrice},#{promoteStartTime},#{promoteEndTime}
+        ,#{isOnSale},#{isPromote},#{givePoints},#{goodsImgId},0,#{canPoint});
+    </insert>
+
+    <!--查询鞋子所有商品品牌-->
+    <select id="getAllTypes" resultType="com.qbd.pojo.ShoesType">
+        select * from goodstype;
+    </select>
+    <!--建立商品和优惠券的关系-->
+    <insert id="addGoodsDiscount" parameterType="com.qbd.pojo.GoodsDiscount">
+        insert  into goodsdiscount values (#{goodsDiscountId},#{goodsId});
+    </insert>
+    <!--商品下架-->
+    <update id="pullOffShelves">
+        update  goods set isOnSale=0 where goodsId=#{goodsId};
+    </update>
+    <!--商品重新上架-->
+    <update id="onShelf">
+         update  goods set isOnSale=1 where goodsId=#{goodsId};
+    </update>
+
+    <!--修改商品信息-->
+    <update id="updateShoes" parameterType="com.qbd.pojo.Shoes">
+        update goods set goodsName=#{goodsName},goodsTypeId=#{goodsTypeId},`desc`=#{desc}
+        ,shopPrice=#{shopPrice},promotePrice=#{promotePrice},promoteStartTime=#{promoteStartTime}
+        ,promoteEndTime=#{promoteEndTime},isPromote=#{isPromote},givePoints=#{givePoints}
+        ,canPoint=#{canPoint} where goodsId =#{goodsId};
+    </update>
+    <!---->
+    <select id="getGoodsDiscount" resultType="com.qbd.pojo.GoodsDiscount">
+        select * from goodsdiscount where goodsDiscountId=#{goodsDiscountId} and goodsId=#{goodsId};
+    </select>
+    <delete id="deleteGoodsDiscount">
+        delete  from goodsdiscount where goodsDiscountId=#{goodsDiscountId} and goodsId=#{goodsId};
+    </delete>
+
+    <!--更新库存数量-->
+    <update id="updateShoesNum">
+        update goods set number = #{number} where  goodsId =#{goodsId};
+    </update>
+</mapper>
