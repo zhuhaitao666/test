@@ -26,7 +26,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
         <!-- 添加Servlet支持 -->
@@ -198,7 +198,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.1</version>
             <scope>compile</scope>
         </dependency>
         <!--支付包依赖-->
